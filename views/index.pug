@@ -1,0 +1,30 @@
+extends default
+
+block content
+  .container
+    .row.justify-content-center.mt-5
+      .col-md-6
+        .card.border-primary.shadow-lg.sticky-md-top
+          .card-header.text-center.text-white.bg-primary
+            h1 Ask ChatGPT
+          .card-body
+            form#my-form.position-relative
+              .form-group
+                label(for='url') Enter a URL:
+                input#url.form-control(type='text' name='url' placeholder='https://example.com')
+              .form-group
+                label(for='extract') Enter your question :
+                input#extract.form-control(type='text' name='extract' placeholder='Enter text to extract...')
+              .d-flex.justify-content-between.align-items-center.my-2
+                button.btn.btn-primary(type='submit') Submit
+                #loader.spinner-border(role="status" style="display:none")
+                  span.visually-hidden Loading...
+
+      .col-md-6
+          #result
+            if user.history
+              each history of user.history.reverse()
+                a(href=`${history.url }` target="_blank")= history.title? history.title:history.url
+                if history.prompt
+                  p.card.shadow.p-2(style="background-color: rgba(13, 110, 252, 0.19)!important;")= JSON.parse(history.prompt).messages[0].content.slice(0,JSON.parse(history.prompt).messages[0].content.indexOf('Here is the text data')).replace('Your are an agent assistant. Use the text data a send you to help me.','')
+                p.card.shadow.p-2(style="background-color: rgba(25, 135, 84, 0.19)!important;")= history.choices[0].message.content

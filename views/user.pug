@@ -1,0 +1,43 @@
+extends default
+
+block content
+  div.container
+    div.row.justify-content-center.mt-5
+      div.col-md-6
+        h1.text-center
+          if isLogin
+            | Login
+          else
+            | Signup
+        form(action=isLogin ? '/user/login' : '/user/signup', method='post')
+          if !isLogin
+            div.form-group
+              label(for='name') Name
+              input.form-control(type='text', name='name', required)
+            div.form-group
+              label(for='email') Email
+              input.form-control(type='email', name='email', required)
+          else
+            div.form-group
+              label(for="emailOrName") Email or Name:
+              input.form-control(type="text" id="emailOrName" name="emailOrName" required)
+          div.form-group
+            label(for='password') Password
+            input.form-control(type='password', name='password', required)
+          if isLogin
+            div.form-group
+              div.form-check
+                input.form-check-input(type='checkbox', id='rememberMe', name='rememberMe')
+                label.form-check-label(for='rememberMe') Remember me
+          button.btn.btn-primary.btn-block(type='submit')
+            if isLogin
+              | Login
+            else
+              | Signup
+        div.text-center.mt-3
+          if isLogin
+            p Don't have an account? 
+            a(href='/user/signup') Signup
+          else
+            p Already have an account? 
+            a(href='/user/login') Login
