@@ -3,28 +3,42 @@ extends default
 block content
   .container
     .row.justify-content-center.mt-5
-      .col-md-6
+      .col-md-4
         .card.border-primary.shadow-lg.sticky-md-top
           .card-header.text-center.text-white.bg-primary
             h1 Ask ChatGPT
+            #loader.spinner-border.spinner-border-sm.m-3.position-absolute(role="status" style="display:none;top:0;right:0;")
+              span.visually-hidden Loading...
           .card-body
             form#my-form.position-relative
               .form-group
                 label(for='url') Enter a URL:
-                input#url.form-control(type='text' name='url' placeholder='https://example.com')
-              .form-group
-                label(for='extract') Enter your question :
-                input#extract.form-control(type='text' name='extract' placeholder='Enter text to extract...')
-              .d-flex.justify-content-between.align-items-center.my-2
-                button.btn.btn-primary(type='submit') Submit
-                #loader.spinner-border(role="status" style="display:none")
-                  span.visually-hidden Loading...
+                .input-group
+                  input#url.form-control(type='text' name='url' placeholder='https://example.com')
+                  button.btn.btn-primary.ml-2(type='submit' style="min-width:100px") 
+                    | Generate
 
-      .col-md-6
+      .col-md-8
           #result
-            if user.history
-              each history of user.history.reverse()
-                a(href=`${history.url }` target="_blank")= history.title? history.title:history.url
-                if history.prompt
-                  p.card.shadow.p-2(style="background-color: rgba(13, 110, 252, 0.19)!important;")= JSON.parse(history.prompt).messages[0].content.slice(0,JSON.parse(history.prompt).messages[0].content.indexOf('Here is the text data')).replace('Your are an agent assistant. Use the text data a send you to help me.','')
-                p.card.shadow.p-2(style="background-color: rgba(25, 135, 84, 0.19)!important;")= history.choices[0].message.content
+            if data 
+              each doc in data
+                - var reversedTitles = doc.title.slice().reverse()  // Create a reversed copy of doc.title
+                - var reversedTexts = doc.text.slice().reverse()  // Create a reversed copy of doc.text
+
+                each s, i in reversedTitles
+                  .card.bg-white.shadow.border.mb-3(id=`${doc.insertedId}`, data-id=`${doc.insertedId}`)
+                      .card-top.p-3.d-flex.align-items-center.justify-content-between
+                          .tools.d-flex.align-items-center
+                              a.btn.btn-white.tool-button.share.mx-2(onclick="handleShareButton(this)", data-toggle="tooltip", title="Twitterでシェア")
+                                  i.fas.fa-share-alt
+                              badge.btn.btn-white.tool-button.tool-button-copy.mx-2(data-toggle="tooltip", title="コピー")
+                                  i.fas.fa-copy
+                              badge.btn.btn-white.tool-button.tool-button-post.mx-2(data-toggle="tooltip", title="Post")
+                                  i.fas.fa-plane
+                          .text-end.text-sm.text-muted(style="font-size:12px")
+                              .custom-date(data-value=`${new Date()}`)
+                      .card-body
+                          h2.title= reversedTitles[i].fullCompletion
+                          p.text= reversedTexts[i].fullCompletion
+                          a(href=doc.url target="_blank")=doc.url
+
